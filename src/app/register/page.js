@@ -1,13 +1,15 @@
 "use client"
 import React, { useState } from 'react'
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
-const contacts = () => {
+const register = () => {
+  const router = useRouter();
   const[user, setUser] = useState({
     username:"",
     email:"",
     phone:"",
-    message:""
+    password:""
 })
 
   const handleInputs = (e) =>{
@@ -22,29 +24,33 @@ const contacts = () => {
     e.preventDefault();
     try 
     {
-        const response = await fetch('/api/contact', {
-            method:'POST',
-            headers:{"Content_Type":"application/json"},
-            body: JSON.stringify({
-                username:user.username,
-                email:user.email,
-                phone:user.phone,
-                message:user.message
-            })
-        })
+      const response = await axios.post('/api/register', user)  
         // Set the status based on the response from the API route
         if (response.status === 200) {
-            setUser({
-                username: "",
-                email: "",
-                phone: "",
-                message: ""
-            })
-        } else {
+          console.log('Registration successful')
+          setUser({
+            username: "",
+            email: "",
+            phone: "",
+            password: ""
+          })
+          router.push('/login');
+        } 
+        else 
+        {
         }
 
-    }catch (e) {
-        console.log(e)
+    }
+    catch (error) 
+    {
+      if (error.response) 
+      {
+        console.log(error.response.data.error);
+      } 
+      else 
+      {
+        console.log("An unexpected error occurred:", error);
+      }
     }
   };
   return (
@@ -59,8 +65,8 @@ const contacts = () => {
         <label> Phone </label>
         <input type="phone" name="phone" value={user.phone} onChange={handleInputs} />
 
-        <label> Message </label>
-        <input type="text" name="message" value={user.message} onChange={handleInputs} />
+        <label> Password </label>
+        <input type="text" name="password" value={user.password} onChange={handleInputs} />
 
         <button type="submit">Submit</button>
       </form>
@@ -68,4 +74,4 @@ const contacts = () => {
   )
 }
 
-export default contacts
+export default register
