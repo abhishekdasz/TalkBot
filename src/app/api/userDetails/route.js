@@ -1,13 +1,14 @@
-import { UserInfo } from '@/models/userInfo'
-import { dbConn } from '@/utils/dbConn'
+import UserInfo  from '@/models/userInfo'
+import dbConnect from "@/utils/dbConn";
 import { getDataFromToken } from '@/helpers/getDataFromToken';
 import { NextResponse } from 'next/server';
-dbConn();
+
 
 export async function GET(request) 
 {
     try 
     {
+        await dbConnect();
         const userId = await getDataFromToken(request);
         const user = await UserInfo.findOne({_id: userId}).select("-password");
         return NextResponse.json(
